@@ -1,0 +1,348 @@
+{
+  "space_id": "01f1d15f1b311ebdafa1e2f312eb23b9",
+  "url": "https://fevm-gauravsharma.cloud.databricks.com/genie/rooms/01f1d15f1b311ebdafa1e2f312eb23b9",
+  "tables": [
+    "gold_rfi_facts",
+    "gold_project_kpis",
+    "gold_firm_performance",
+    "gold_rfi_monthly",
+    "gold_rfi_root_cause",
+    "rfi_risk_scores",
+    "rfi_workflow_audit"
+  ],
+  "results": [
+    {
+      "question": "Which projects have the most overdue open RFIs right now?",
+      "sql": "WITH project_overdue AS (\n  SELECT\n    `project_name`,\n    COUNT(*) AS `overdue_open_rfis`\n  FROM `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_facts`\n  WHERE `is_open` = true\n    AND `sla_breached` = true\n    AND `project_name` IS NOT NULL\n  GROUP BY `project_name`\n), ranked_projects AS (\n  SELECT\n    `project_name`,\n    `overdue_open_rfis`,\n    RANK() OVER (ORDER BY `overdue_open_rfis` DESC) AS `project_rank`\n  FROM project_overdue\n)\nSELECT\n  `project_name`,\n  `overdue_open_rfis`,\n  `project_rank`\nFROM ranked_projects\nORDER BY `project_rank`, `overdue_open_rfis` DESC, `project_name`",
+      "description": "You want to see a list of projects ranked by the number of their currently open RFIs that are overdue, meaning those RFIs have missed their SLA deadlines.",
+      "columns": [
+        "project_name",
+        "overdue_open_rfis",
+        "project_rank"
+      ],
+      "rows": [
+        [
+          "Harbor Point Data Center Phase 2",
+          "15",
+          "1"
+        ],
+        [
+          "Riverbend Wastewater Treatment Upgrade",
+          "11",
+          "2"
+        ],
+        [
+          "Pinecrest Senior Living Community",
+          "7",
+          "3"
+        ],
+        [
+          "Union Station Mixed-Use Tower",
+          "5",
+          "4"
+        ],
+        [
+          "Lakeside Regional Hospital Expansion",
+          "4",
+          "5"
+        ],
+        [
+          "Mesa State University Science Building",
+          "2",
+          "6"
+        ]
+      ],
+      "text": "There are **6 projects** with overdue open RFIs right now; the highest count is **Harbor Point Data Center Phase 2** with **15**. Examples include:\n- **Harbor Point Data Center Phase 2** \u2014 **15** overdue open RFIs\n- **Riverbend Wastewater Treatment Upgrade** \u2014 **11**\n- **Pinecrest Senior Living Community** \u2014 **7**\n- **Union Station Mixed-Use Tower** \u2014 **5**\n- **Lakeside Regional Hospital Expansion** \u2014 **4**\nThe backlog is concentrated at the top, with the leading project carrying more than double the overdue open RFIs of most others shown.",
+      "status": "MessageStatus.COMPLETED"
+    },
+    {
+      "question": "What is our average RFI response time by discipline, and how has it trended over the last 6 months?",
+      "sql": "WITH `overall_by_discipline` AS (\n  SELECT\n    `discipline`,\n    AVG(`days_to_answer`) AS `avg_response_time_days`\n  FROM `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_facts`\n  WHERE `answered_at` IS NOT NULL\n    AND `days_to_answer` IS NOT NULL\n    AND `discipline` IS NOT NULL\n  GROUP BY `discipline`\n),\n`monthly_trend` AS (\n  SELECT\n    DATE_TRUNC('MONTH', `submitted_month`) AS `month`,\n    `discipline`,\n    AVG(`days_to_answer`) AS `avg_response_time_days`\n  FROM `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_facts`\n  WHERE `answered_at` IS NOT NULL\n    AND `days_to_answer` IS NOT NULL\n    AND `discipline` IS NOT NULL\n    AND `submitted_month` IS NOT NULL\n    AND `submitted_month` BETWEEN ADD_MONTHS(DATE_TRUNC('MONTH', CURRENT_DATE), -5) AND CURRENT_DATE\n  GROUP BY DATE_TRUNC('MONTH', `submitted_month`), `discipline`\n)\nSELECT\n  t.`month`,\n  t.`discipline`,\n  o.`avg_response_time_days` AS `overall_avg_response_time_days`,\n  t.`avg_response_time_days` AS `monthly_avg_response_time_days`\nFROM `monthly_trend` t\nJOIN `overall_by_discipline` o\n  ON t.`discipline` = o.`discipline`\nORDER BY t.`month`, t.`discipline`",
+      "description": "You want to see the average response time for RFIs by discipline overall and how this average has changed month by month over the last six months.",
+      "columns": [
+        "month",
+        "discipline",
+        "overall_avg_response_time_days",
+        "monthly_avg_response_time_days"
+      ],
+      "rows": [
+        [
+          "2026-05-01T00:00:00.000Z",
+          "Architectural",
+          "7.0619582955575675",
+          "7.327031249999997"
+        ],
+        [
+          "2026-05-01T00:00:00.000Z",
+          "Civil",
+          "6.803121546961322",
+          "7.195555555555554"
+        ],
+        [
+          "2026-05-01T00:00:00.000Z",
+          "Electrical",
+          "9.304741379310345",
+          "8.618333333333332"
+        ],
+        [
+          "2026-05-01T00:00:00.000Z",
+          "Fire Protection",
+          "10.07688775510204",
+          "10.888"
+        ],
+        [
+          "2026-05-01T00:00:00.000Z",
+          "Mechanical",
+          "8.706142131979693",
+          "9.144285714285713"
+        ],
+        [
+          "2026-05-01T00:00:00.000Z",
+          "Plumbing",
+          "10.561120448179274",
+          "17.321875000000002"
+        ],
+        [
+          "2026-05-01T00:00:00.000Z",
+          "Structural",
+          "6.065129375951295",
+          "6.544102564102565"
+        ],
+        [
+          "2026-06-01T00:00:00.000Z",
+          "Architectural",
+          "7.0619582955575675",
+          "7.8378181818181805"
+        ],
+        [
+          "2026-06-01T00:00:00.000Z",
+          "Civil",
+          "6.803121546961322",
+          "9.089130434782609"
+        ],
+        [
+          "2026-06-01T00:00:00.000Z",
+          "Electrical",
+          "9.304741379310345",
+          "11.830000000000002"
+        ],
+        [
+          "2026-06-01T00:00:00.000Z",
+          "Fire Protection",
+          "10.07688775510204",
+          "12.626363636363637"
+        ],
+        [
+          "2026-06-01T00:00:00.000Z",
+          "Mechanical",
+          "8.706142131979693",
+          "8.033076923076923"
+        ]
+      ],
+      "text": "Across the answered RFIs shown for the last 6 months, the overall average response time by discipline is lowest for **Structural (6.1 days)** and **Civil (6.8 days)**, and highest for **Plumbing (10.6 days)**, **Fire Protection (10.1 days)**, and **Electrical (9.3 days)**. Examples include:\n- **Structural:** overall average **6.1 days**; monthly average improved from **6.5 days in May** to **2.8 days in October**\n- **Civil:** overall average **6.8 days**; monthly average improved from **7.2 days in May** to **3.4 days in October**\n- **Architectural:** overall average **7.1 days**; monthly average moved from **7.3 days in May** to **4.8 days in October**\n- **Electrical:** overall average **9.3 days**; monthly average improved from **8.6 days in May** to **5.4 days in October**\n- **Fire Protection:** overall average **10.1 days**; monthly average was volatile, dropping to **4.3 days in August**, spiking to **17.2 days in September**, then improving to **5.4 days in October**\n\nOverall, most disciplines finished October faster than they were in May, while **Fire Protection** and **Plumbing** showed the most volatility in the 41 rows returned.",
+      "status": "MessageStatus.COMPLETED"
+    },
+    {
+      "question": "How much change-order cost came from RFIs caused by design conflicts, by project?",
+      "sql": "SELECT `f`.`project_name`, SUM(`f`.`cost_impact_usd`) AS `change_order_cost_usd`\nFROM `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_facts` AS `f`\nINNER JOIN `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_root_cause` AS `rc`\n  ON `f`.`rfi_id` = `rc`.`rfi_id`\nWHERE `f`.`project_name` IS NOT NULL\n  AND `f`.`cost_impact_usd` IS NOT NULL\n  AND `rc`.`root_cause` IS NOT NULL\n  AND `rc`.`root_cause` ILIKE '%design conflict%'\nGROUP BY `f`.`project_name`\nORDER BY `change_order_cost_usd` DESC",
+      "description": "You want to see the total change-order cost caused by RFIs that have a root cause related to design conflicts, broken down by project name.",
+      "columns": [
+        "project_name",
+        "change_order_cost_usd"
+      ],
+      "rows": [
+        [
+          "Lakeside Regional Hospital Expansion",
+          "1154781.0"
+        ],
+        [
+          "Harbor Point Data Center Phase 2",
+          "805506.0"
+        ],
+        [
+          "Mesa State University Science Building",
+          "582419.0"
+        ],
+        [
+          "Union Station Mixed-Use Tower",
+          "451339.0"
+        ],
+        [
+          "Cedar Valley K-12 Campus",
+          "414049.0"
+        ],
+        [
+          "Northgate Medical Office Building",
+          "310716.0"
+        ],
+        [
+          "Pinecrest Senior Living Community",
+          "288495.0"
+        ],
+        [
+          "Riverbend Wastewater Treatment Upgrade",
+          "186111.0"
+        ]
+      ],
+      "text": "Across the **8 projects** shown, the highest change-order cost tied to RFIs with a root cause matching **design conflict** is **Lakeside Regional Hospital Expansion** at **$1,154,781**, and the lowest is **Riverbend Wastewater Treatment Upgrade** at **$186,111**. Examples include:\n- **Lakeside Regional Hospital Expansion** \u2014 **$1,154,781**\n- **Harbor Point Data Center Phase 2** \u2014 **$805,506**\n- **Mesa State University Science Building** \u2014 **$582,419**\n- **Union Station Mixed-Use Tower** \u2014 **$451,339**\n- **Cedar Valley K-12 Campus** \u2014 **$414,049**\n\nThis sample shows a wide spread in design-conflict-related change-order cost by project, ranging from about **$186K** to **$1.15M**.",
+      "status": "MessageStatus.COMPLETED"
+    },
+    {
+      "question": "Which design firm is slowest to answer RFIs?",
+      "sql": "WITH firm_perf AS (\n  SELECT\n    `assigned_firm`,\n    SUM(`answered_rfis`) AS `answered_rfis`,\n    try_divide(SUM(`avg_days_to_answer` * `answered_rfis`),SUM(`answered_rfis`)) AS `avg_days_to_answer`,\n    AVG(`sla_breach_pct`) AS `sla_breach_pct`\n  FROM `gauravsharma_catalog`.`rfi_intel`.`gold_firm_performance`\n  WHERE `assigned_firm` IS NOT NULL\n  GROUP BY `assigned_firm`\n), ranked AS (\n  SELECT\n    `assigned_firm`,\n    `answered_rfis`,\n    `avg_days_to_answer`,\n    `sla_breach_pct`,\n    RANK() OVER (ORDER BY `avg_days_to_answer` DESC) AS `firm_rank`\n  FROM firm_perf\n)\nSELECT\n  `assigned_firm`,\n  `answered_rfis`,\n  ROUND(`avg_days_to_answer`, 1) AS `avg_days_to_answer`,\n  ROUND(`sla_breach_pct`, 1) AS `sla_breach_pct`\nFROM ranked\nWHERE `firm_rank` = 1",
+      "description": "You want to find the design firm that takes the longest average time to answer RFIs.",
+      "columns": [
+        "assigned_firm",
+        "answered_rfis",
+        "avg_days_to_answer",
+        "sla_breach_pct"
+      ],
+      "rows": [
+        [
+          "Sentinel Fire Protection Engineering",
+          "196",
+          "10.1",
+          "73.7"
+        ]
+      ],
+      "text": "The **slowest** design firm to answer RFIs is **Sentinel Fire Protection Engineering**, with **196** answered RFIs and an average response time of **10.1 days**. For **Sentinel Fire Protection Engineering**, the SLA breach rate is **73.7%**, which indicates a high share of late RFIs alongside the slowest response time.",
+      "status": "MessageStatus.COMPLETED"
+    },
+    {
+      "question": "Show the 10 open RFIs most likely to miss their SLA with their drivers",
+      "sql": "SELECT\n  `f`.`rfi_id`,\n  `f`.`project_name`,\n  `f`.`discipline`,\n  `f`.`subject`,\n  `s`.`breach_probability`,\n  `s`.`predicted_days_to_answer`,\n  `s`.`risk_tier`,\n  `s`.`top_drivers`\nFROM `gauravsharma_catalog`.`rfi_intel`.`rfi_risk_scores` AS `s`\nINNER JOIN `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_facts` AS `f`\n  ON `s`.`rfi_id` = `f`.`rfi_id`\nWHERE `f`.`is_open` = true\n  AND `s`.`breach_probability` IS NOT NULL\nORDER BY `s`.`breach_probability` DESC, `f`.`rfi_id` ASC\nLIMIT 10",
+      "description": "You want to see the top 10 open RFIs that have the highest predicted probability of missing their SLA, along with details about the project, discipline, subject, predicted days to answer, risk tier, and the main factors driving the risk.",
+      "columns": [
+        "rfi_id",
+        "project_name",
+        "discipline",
+        "subject",
+        "breach_probability",
+        "predicted_days_to_answer",
+        "risk_tier",
+        "top_drivers"
+      ],
+      "rows": [
+        [
+          "RFI-104-02352",
+          "Harbor Point Data Center Phase 2",
+          "Architectural",
+          "Storefront deflection criteria",
+          "0.9405",
+          "6.4",
+          "High",
+          "no drawing reference attached; no proposed solution from the field; urgent 3-day SLA"
+        ],
+        [
+          "RFI-106-03207",
+          "Riverbend Wastewater Treatment Upgrade",
+          "Structural",
+          "Slab-on-grade mix strength",
+          "0.9185",
+          "4.1",
+          "High",
+          "no drawing reference attached; no proposed solution from the field; urgent 3-day SLA"
+        ],
+        [
+          "RFI-104-02369",
+          "Harbor Point Data Center Phase 2",
+          "Mechanical",
+          "Duct offset at structure",
+          "0.8747",
+          "9.6",
+          "High",
+          "Brightline MEP Partners breaches SLA more often than average; no proposed solution from the field"
+        ],
+        [
+          "RFI-104-02326",
+          "Harbor Point Data Center Phase 2",
+          "Architectural",
+          "Slab moisture before flooring",
+          "0.8567",
+          "11.9",
+          "High",
+          "high project RFI load (29 in last 14d); no drawing reference attached; no proposed solution from the field"
+        ],
+        [
+          "RFI-104-02363",
+          "Harbor Point Data Center Phase 2",
+          "Fire Protection",
+          "Sprinkler head relocation for duct",
+          "0.783",
+          "10.5",
+          "High",
+          "Sentinel Fire Protection Engineering breaches SLA more often than average; no drawing reference attached"
+        ],
+        [
+          "RFI-104-02338",
+          "Harbor Point Data Center Phase 2",
+          "Plumbing",
+          "Lavatory flow rate vs local code",
+          "0.7797",
+          "10.8",
+          "High",
+          "Brightline MEP Partners breaches SLA more often than average; no drawing reference attached; no proposed solution from the field"
+        ],
+        [
+          "RFI-106-03205",
+          "Riverbend Wastewater Treatment Upgrade",
+          "Plumbing",
+          "PEX substitution for domestic water",
+          "0.767",
+          "9.4",
+          "High",
+          "Brightline MEP Partners breaches SLA more often than average; no drawing reference attached; no proposed solution from the field"
+        ],
+        [
+          "RFI-104-02367",
+          "Harbor Point Data Center Phase 2",
+          "Fire Protection",
+          "Sprinkler head relocation for duct",
+          "0.7555",
+          "10.2",
+          "High",
+          "Sentinel Fire Protection Engineering breaches SLA more often than average; no proposed solution from the field"
+        ],
+        [
+          "RFI-104-02347",
+          "Harbor Point Data Center Phase 2",
+          "Mechanical",
+          "Duct pressure class not scheduled",
+          "0.7523",
+          "9.0",
+          "High",
+          "Brightline MEP Partners breaches SLA more often than average; no drawing reference attached"
+        ],
+        [
+          "RFI-104-02360",
+          "Harbor Point Data Center Phase 2",
+          "Electrical",
+          "Aluminum branch conductors",
+          "0.7372",
+          "7.7",
+          "High",
+          "Voltaic Electrical Design breaches SLA more often than average; no proposed solution from the field"
+        ]
+      ],
+      "text": "Here are the **10 open RFIs most likely to miss their SLA**, and all **10 are rated High risk**. Examples include:\n- **Harbor Point Data Center Phase 2** \u2014 **Storefront deflection criteria** (Architectural): **94.1%** breach probability, predicted answer time **6.4 days**; drivers: **no drawing reference attached**, **no proposed solution from the field**, **urgent 3-day SLA**\n- **Riverbend Wastewater Treatment Upgrade** \u2014 **Slab-on-grade mix strength** (Structural): **91.9%** breach probability, predicted answer time **4.1 days**; drivers: **no drawing reference attached**, **no proposed solution from the field**, **urgent 3-day SLA**\n- **Harbor Point Data Center Phase 2** \u2014 **Duct offset at structure** (Mechanical): **87.5%** breach probability, predicted answer time **9.6 days**; drivers: **Brightline MEP Partners breaches SLA more often than average**, **no proposed solution from the field**\n- **Harbor Point Data Center Phase 2** \u2014 **Slab moisture before flooring** (Architectural): **85.7%** breach probability, predicted answer time **11.9 days**; drivers: **high project RFI load (29 in last 14d)**, **no drawing reference attached**, **no proposed solution from the field**\n- **Harbor Point Data Center Phase 2** \u2014 **Sprinkler head relocation for duct** (Fire Protection): **78.3%** breach probability, predicted answer time **10.5 days**; drivers: **Sentinel Fire Protection Engineering breaches SLA more often than average**, **no drawing reference attached**\n\nAcross all 10 RFIs, the most common drivers are **missing drawing references** and **no proposed field solution**, with breach probabilities ranging from **73.7% to 94.1%** and **8 of the 10** RFIs coming from **Harbor Point Data Center Phase 2**.",
+      "status": "MessageStatus.COMPLETED"
+    },
+    {
+      "question": "What is the total liquidated-damages exposure tied to late RFIs on the Harbor Point Data Center?",
+      "sql": "SELECT `project_name`, SUM(`ld_exposure_usd`) AS `total_ld_exposure_usd`\nFROM `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_facts`\nWHERE `project_name` IS NOT NULL\n  AND `project_name` ILIKE '%Harbor Point Data Center%'\n  AND `sla_breached` = true\nGROUP BY `project_name`",
+      "description": "You want to see the total liquidated damages exposure caused by RFIs that were late (missed their SLA) for the Harbor Point Data Center project.",
+      "columns": [
+        "project_name",
+        "total_ld_exposure_usd"
+      ],
+      "rows": [
+        [
+          "Harbor Point Data Center Phase 2",
+          "7260000.0"
+        ]
+      ],
+      "text": "For **Harbor Point Data Center Phase 2**, the total liquidated-damages exposure tied to late RFIs is **USD 7,260,000**. Based on the 1 returned project row, **Harbor Point Data Center Phase 2** is the only Harbor Point Data Center project shown with late-RFI liquidated-damages exposure in this result.",
+      "status": "MessageStatus.COMPLETED"
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+{
+  "table_tags_applied": {
+    "bronze_rfis": true,
+    "silver_rfis": true,
+    "gold_rfi_facts": true,
+    "gold_project_kpis": true,
+    "gold_firm_performance": true,
+    "gold_rfi_monthly": true,
+    "silver_spec_chunks": true
+  },
+  "row_counts": {
+    "silver_rfis": 3795,
+    "silver_spec_chunks": 25,
+    "bronze_rfis": 3844,
+    "gold_rfi_facts": 3795
+  },
+  "expectations": [
+    {
+      "dataset": "gauravsharma_catalog.rfi_intel.silver_projects",
+      "expectation": "project_pk",
+      "passed": 32,
+      "failed": 0
+    },
+    {
+      "dataset": "gauravsharma_catalog.rfi_intel.silver_rfis",
+      "expectation": "answered_after_submitted",
+      "passed": 15272,
+      "failed": 0
+    },
+    {
+      "dataset": "gauravsharma_catalog.rfi_intel.silver_rfis",
+      "expectation": "known_project",
+      "passed": 15212,
+      "failed": 60
+    },
+    {
+      "dataset": "gauravsharma_catalog.rfi_intel.silver_rfis",
+      "expectation": "valid_discipline",
+      "passed": 15212,
+      "failed": 60
+    },
+    {
+      "dataset": "gauravsharma_catalog.rfi_intel.silver_rfis",
+      "expectation": "valid_rfi_id",
+      "passed": 15272,
+      "failed": 0
+    },
+    {
+      "dataset": "gauravsharma_catalog.rfi_intel.silver_spec_chunks",
+      "expectation": "has_content",
+      "passed": 100,
+      "failed": 0
+    }
+  ],
+  "inventory": [
+    {
+      "table_name": "app_rfi_inbox",
+      "table_type": "MANAGED",
+      "comment": "Serving projection for the app: open RFIs enriched with ML SLA-risk, Gen-AI root cause and cited draft. Synced to Lakebase."
+    },
+    {
+      "table_name": "bronze_design_firms",
+      "table_type": "STREAMING_TABLE",
+      "comment": "Raw design-firm contractual SLA sheet (Auto Loader, CSV)."
+    },
+    {
+      "table_name": "bronze_projects",
+      "table_type": "STREAMING_TABLE",
+      "comment": "Raw project register (Auto Loader, JSON)."
+    },
+    {
+      "table_name": "bronze_rfis",
+      "table_type": "STREAMING_TABLE",
+      "comment": "Raw RFI log exports from the PM system (Auto Loader, JSON). One row per exported record, defects included."
+    },
+    {
+      "table_name": "bronze_spec_docs",
+      "table_type": "STREAMING_TABLE",
+      "comment": "Raw specification book, one Markdown document per CSI division (Auto Loader, whole-text)."
+    },
+    {
+      "table_name": "event_log_199a997b_3375_412a_8762_e9277d2df980",
+      "table_type": "MANAGED",
+      "comment": null
+    },
+    {
+      "table_name": "event_log_25d9d794_e5c9_4523_a23d_bc6967152480",
+      "table_type": "MANAGED",
+      "comment": null
+    },
+    {
+      "table_name": "event_log_98b86669_bb57_4052_9cf1_8df3af41b93d",
+      "table_type": "MANAGED",
+      "comment": null
+    },
+    {
+      "table_name": "gold_firm_performance",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Design-firm responsiveness by discipline vs contractual SLA (answered RFIs only)."
+    },
+    {
+      "table_name": "gold_project_kpis",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Portfolio KPIs per project: RFI volume, response time, SLA breach rate, change-order cost and schedule exposure."
+    },
+    {
+      "table_name": "gold_rfi_facts",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "One row per RFI enriched with project, firm SLA, response time and SLA outcome. Primary analytical fact table."
+    },
+    {
+      "table_name": "gold_rfi_monthly",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Monthly RFI trend by discipline."
+    },
+    {
+      "table_name": "gold_rfi_root_cause",
+      "table_type": "MANAGED",
+      "comment": "Gen-AI root cause per RFI (ai_classify over subject + question). Drives preconstruction prevention."
+    },
+    {
+      "table_name": "rfi_ai_drafts",
+      "table_type": "MANAGED",
+      "comment": "Batch RAG drafts (Vector Search + Claude via Foundation Model API) for every open RFI, pending human approval"
+    },
+    {
+      "table_name": "rfi_inbox",
+      "table_type": "FOREIGN",
+      "comment": ""
+    },
+    {
+      "table_name": "rfi_risk_scores",
+      "table_type": "MANAGED",
+      "comment": "ML batch scores for open RFIs: SLA-breach probability + expected days to answer (champion models in UC)"
+    },
+    {
+      "table_name": "rfi_workflow_audit",
+      "table_type": "MANAGED",
+      "comment": "Governed Delta copy of every human decision taken in the app (sourced from Lakebase ops.rfi_workflow_events)"
+    },
+    {
+      "table_name": "silver_design_firms",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Design firm of record per discipline with contractual RFI response SLA (calendar days)."
+    },
+    {
+      "table_name": "silver_projects",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Conformed project register."
+    },
+    {
+      "table_name": "silver_rfis",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Cleansed, de-duplicated RFIs. Defective rows are dropped by expectations and counted in the event log."
+    },
+    {
+      "table_name": "silver_spec_chunks",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Specification book parsed into one chunk per CSI section (source for the Vector Search index)."
+    },
+    {
+      "table_name": "spec_chunks",
+      "table_type": "MANAGED",
+      "comment": "Specification knowledge base (one chunk per CSI section). Source of the Vector Search index."
+    },
+    {
+      "table_name": "spec_chunks_index",
+      "table_type": "FOREIGN",
+      "comment": "Managed Vector Index with Delta Sync"
+    },
+    {
+      "table_name": "v_rfi_secure",
+      "table_type": "VIEW",
+      "comment": "Governed view over gold_rfi_facts: cost and LD exposure masked via mask_cost(); used by downstream consumers"
+    }
+  ],
+  "lineage_edges": [
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.app_rfi_inbox"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_root_cause",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.app_rfi_inbox"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.rfi_ai_drafts",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.app_rfi_inbox"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.rfi_risk_scores",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.app_rfi_inbox"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.gold_firm_performance"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.gold_project_kpis"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.silver_design_firms",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.silver_projects",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.silver_rfis",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_monthly"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_root_cause"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.app_rfi_inbox",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.rfi_inbox"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.bronze_design_firms",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.silver_design_firms"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.bronze_projects",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.silver_projects"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.bronze_rfis",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.silver_rfis"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.bronze_spec_docs",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.silver_spec_chunks"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.silver_spec_chunks",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.spec_chunks"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.spec_chunks",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.spec_chunks_index"
+    },
+    {
+      "source_table_full_name": "gauravsharma_catalog.rfi_intel.gold_rfi_facts",
+      "target_table_full_name": "gauravsharma_catalog.rfi_intel.v_rfi_secure"
+    }
+  ]
+}

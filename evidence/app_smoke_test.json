@@ -1,0 +1,66 @@
+{
+  "captured_at_utc": "2026-10-26T18:23:02Z",
+  "app_url": "https://rfi-copilot-7474643869233611.aws.databricksapps.com",
+  "endpoint": "/api/health?deep=1",
+  "what_this_proves": {
+    "lakebase_inbox": "app reads the synced Lakebase table (rows, latency, ML high-risk count)",
+    "warehouse_gold_kpis": "app reads governed gold tables via SQL warehouse",
+    "vector_search": "spec retrieval from the Vector Search index",
+    "genie_space": "Genie space resolved by the app service principal",
+    "llm_live_draft": "live cited draft from Claude via Foundation Model API",
+    "genie_answer": "Genie Conversation API answer + generated SQL",
+    "lakebase_write": "transactional write to ops.rfi_workflow_events + audit-sync job triggered (test event removed afterwards)"
+  },
+  "results": {
+    "lakebase_inbox": {
+      "rows": 65,
+      "ms": 7.9,
+      "high_risk": 16
+    },
+    "warehouse_gold_kpis": {
+      "total": "3795",
+      "open": "65",
+      "overdue": "44",
+      "avg_days": "7.9",
+      "co_cost": "1.6778005E7",
+      "ld": "1.2083E7"
+    },
+    "vector_search": [
+      "03 20 00",
+      "05 50 00"
+    ],
+    "genie_space": "01f1d15f1b311ebdafa1e2f312eb23b9",
+    "llm_live_draft": {
+      "response": "Duct routing is diagrammatic, so a 12 inch offset to clear the beam at Level 3, grid E-8 is permitted as a routing change, provided it is coordinated with structure and sprinkler mains through the BIM coordination process (per 23 31 13). If the offset can be made without changing the duct size, no resizing is required by the specifications. Any change in duct size, including a transition to a different cross-section to fit under the beam, requires approval of the Mechanical Engineer of Record (per 23 31 13). The offset must also maintain 18 inches clearance below sprinkler deflectors, and any sprinkler head relocation caused by the duct conflict requires a revised hydraulic calculation stamped by the fire protection engineer (per 21 13 13). The excerpts do not state allowable offset geometry, fitting types, or pressure-loss criteria, so the offset detail must be confirmed through the coordination process and, if sizing changes, by the Mechanical EOR.",
+      "clarity_score": 55,
+      "impact": {
+        "cost": "Low",
+        "schedule": "Low",
+        "safety": "Low"
+      },
+      "root_cause": "The duct routing was shown diagrammatically without coordination against the beam depth and sprinkler mains at Level 3, grid E-8.",
+      "prevention": "Complete BIM clash detection between structure, ductwork, and sprinkler mains before issuing construction documents, and flag tight-clearance zones for resolution.",
+      "route_to": [
+        "Mechanical Engineer of Record",
+        "BIM Coordinator",
+        "Fire Protection Engineer",
+        "Mechanical Subcontractor"
+      ]
+    },
+    "genie_answer": {
+      "desc": "You want to see the project or projects that currently have the highest number of open RFIs.",
+      "sql": "WITH `project_open_rfis` AS (\n  SELECT\n    `project_name`,\n    COUNT(*) AS `open_rfis`\n  FROM `gauravsharma_catalog`.`rfi_intel`.`gold_rfi_facts`\n  WHERE `is_open` = true\n    AND `project_name` IS NOT NULL\n  GROUP BY `project_name`\n), `ranked_projects` AS (\n  SELECT\n    `project_name`,\n    `open_rfis`,\n    RANK() OVER (ORDER BY `open_rfis` DESC) AS `rnk`\n  FROM `project_open_rfis`\n)\nSELECT\n  `project_name`,\n  `open_rfis`\nFROM `ranked_projects`\nWHERE `rnk` = 1",
+      "rows": [
+        [
+          "Harbor Point Data Center Phase 2",
+          "24"
+        ]
+      ]
+    },
+    "lakebase_write": {
+      "event_id": "EV-4a68f1c8b2",
+      "ms": 5.390665959566832,
+      "audit_run_id": 492068099897183
+    }
+  }
+}

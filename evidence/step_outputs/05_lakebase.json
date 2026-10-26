@@ -1,0 +1,63 @@
+{
+  "instance": {
+    "name": "rfi-intel-db",
+    "state": "DatabaseInstanceState.AVAILABLE",
+    "capacity": "CU_1",
+    "pg_version": "PG_VERSION_16"
+  },
+  "synced_table": {
+    "name": "gauravsharma_catalog.rfi_intel.rfi_inbox",
+    "source": "gauravsharma_catalog.rfi_intel.app_rfi_inbox",
+    "state": "SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE",
+    "pipeline_id": "98b86669-bb57-4052-9cf1-8df3af41b93d"
+  },
+  "postgres": {
+    "rfi_inbox_rows": 65,
+    "high_risk": 16,
+    "top5": [
+      [
+        "RFI-104-02352",
+        "Harbor Point Data Center Phase 2",
+        "Architectural",
+        "High",
+        "0.9405",
+        "6.4"
+      ],
+      [
+        "RFI-106-03207",
+        "Riverbend Wastewater Treatment Upgrade",
+        "Structural",
+        "High",
+        "0.9185",
+        "4.1"
+      ],
+      [
+        "RFI-104-02369",
+        "Harbor Point Data Center Phase 2",
+        "Mechanical",
+        "High",
+        "0.8747",
+        "9.6"
+      ],
+      [
+        "RFI-104-02326",
+        "Harbor Point Data Center Phase 2",
+        "Architectural",
+        "High",
+        "0.8567",
+        "11.9"
+      ],
+      [
+        "RFI-104-02363",
+        "Harbor Point Data Center Phase 2",
+        "Fire Protection",
+        "High",
+        "0.783",
+        "10.5"
+      ]
+    ],
+    "p50_ms": 5.8,
+    "p95_ms": 8.1,
+    "delta_rows": 65
+  }
+}

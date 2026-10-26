@@ -1,0 +1,187 @@
+{
+  "vector_index": {
+    "name": "gauravsharma_catalog.rfi_intel.spec_chunks_index",
+    "endpoint": "cdi_vs",
+    "indexed_rows": 25,
+    "embedding_model": "databricks-gte-large-en"
+  },
+  "root_cause_distribution": {
+    "Spec ambiguity": 1065,
+    "Design conflict": 785,
+    "Field condition": 749,
+    "Missing information": 721,
+    "Substitution request": 462,
+    "Constructability": 13
+  },
+  "ai_classify_accuracy": 0.74,
+  "confusion": [
+    {
+      "truth": "Constructability",
+      "predicted": "Field condition",
+      "n": 80
+    },
+    {
+      "truth": "Constructability",
+      "predicted": "Spec ambiguity",
+      "n": 21
+    },
+    {
+      "truth": "Design conflict",
+      "predicted": "Design conflict",
+      "n": 563
+    },
+    {
+      "truth": "Design conflict",
+      "predicted": "Spec ambiguity",
+      "n": 189
+    },
+    {
+      "truth": "Design conflict",
+      "predicted": "Field condition",
+      "n": 42
+    },
+    {
+      "truth": "Design conflict",
+      "predicted": "Substitution request",
+      "n": 29
+    },
+    {
+      "truth": "Design conflict",
+      "predicted": "Constructability",
+      "n": 13
+    },
+    {
+      "truth": "Design conflict",
+      "predicted": "Missing information",
+      "n": 6
+    },
+    {
+      "truth": "Field condition",
+      "predicted": "Field condition",
+      "n": 609
+    },
+    {
+      "truth": "Field condition",
+      "predicted": "Missing information",
+      "n": 12
+    },
+    {
+      "truth": "Field condition",
+      "predicted": "Spec ambiguity",
+      "n": 11
+    },
+    {
+      "truth": "Field condition",
+      "predicted": "Design conflict",
+      "n": 11
+    },
+    {
+      "truth": "Missing information",
+      "predicted": "Missing information",
+      "n": 682
+    },
+    {
+      "truth": "Missing information",
+      "predicted": "Spec ambiguity",
+      "n": 208
+    },
+    {
+      "truth": "Missing information",
+      "predicted": "Design conflict",
+      "n": 5
+    },
+    {
+      "truth": "Missing information",
+      "predicted": "Field condition",
+      "n": 3
+    },
+    {
+      "truth": "Spec ambiguity",
+      "predicted": "Spec ambiguity",
+      "n": 522
+    },
+    {
+      "truth": "Spec ambiguity",
+      "predicted": "Design conflict",
+      "n": 202
+    },
+    {
+      "truth": "Spec ambiguity",
+      "predicted": "Field condition",
+      "n": 15
+    },
+    {
+      "truth": "Spec ambiguity",
+      "predicted": "Missing information",
+      "n": 4
+    },
+    {
+      "truth": "Spec ambiguity",
+      "predicted": "Substitution request",
+      "n": 1
+    },
+    {
+      "truth": "Substitution request",
+      "predicted": "Substitution request",
+      "n": 432
+    },
+    {
+      "truth": "Substitution request",
+      "predicted": "Spec ambiguity",
+      "n": 114
+    },
+    {
+      "truth": "Substitution request",
+      "predicted": "Missing information",
+      "n": 17
+    },
+    {
+      "truth": "Substitution request",
+      "predicted": "Design conflict",
+      "n": 4
+    }
+  ],
+  "rag": {
+    "draft_failures": 0,
+    "open_rfis": 65,
+    "hit_at_4": 0.954,
+    "grounded_citations": 64,
+    "samples": [
+      {
+        "rfi_id": "RFI-108-03798",
+        "draft": "The supplied specification excerpts (08 41 13, 21 13 13, 23 05 93, and 05 12 00) contain no lighting section and no luminaire efficacy requirement, so we cannot confirm whether a 105 lm/W troffer is acceptable. The specified minimum efficacy (lm/W) must come from the lighting fixture section (e.g., Division 26 luminaire requirements) or the electrical drawings' fixture schedule, neither of which was provided. The design team (Electrical Engineer of Record) must state the required minimum efficacy and confirm whether the proposed 105 lm/W fixture is acceptable or must be substituted. Also note that if the substitute fixture changes ceiling layout and causes sprinkler head relocation, a revised hydraulic calculation stamped by the fire protection engineer would be required (per 21 13 13).",
+        "cited": "05 12 00, 08 41 13, 21 13 13, 23 05 93",
+        "retrieved": "08 41 13, 21 13 13, 23 05 93, 05 12 00",
+        "hit": false
+      },
+      {
+        "rfi_id": "RFI-104-02326",
+        "draft": "The maximum allowable substrate moisture is 75% RH per ASTM F2170 before installation (per 09 65 00). The Basement slab at 82% RH exceeds this limit, so the flooring installer may not proceed with the resilient sheet flooring as-is. Installation may proceed only if a manufacturer-approved moisture mitigation system is applied to the slab (per 09 65 00). The excerpts do not identify the specific mitigation product or whether the Basement flooring falls under the 'patient and classroom areas' scope of 09 65 00, so the design team must confirm the applicable flooring type and approve the mitigation system and manufacturer submittal. The other excerpts (09 29 00, 31 23 00, 03 30 00) do not address slab moisture limits.",
+        "cited": "03 30 00, 09 29 00, 09 65 00, 31 23 00",
+        "retrieved": "09 65 00, 09 29 00, 31 23 00, 03 30 00",
+        "hit": true
+      },
+      {
+        "rfi_id": "RFI-105-02905",
+        "draft": "Doors in 1-hour rated corridors must carry a minimum 20-minute fire rating with positive latching (per 08 11 13). The Level 3 corridor openings in the door schedule should therefore be annotated as 20-minute rated, positive-latching hollow metal doors, with 14-gauge frames and reinforcement for all hardware (per 08 11 13). The excerpts do not address whether any specific Level 3 openings are exceptions, such as shaft or stair doors, which would require 90-minute ratings (per 08 11 13). The design team should confirm the schedule revision and verify the rating against the governing code and rated-wall drawings, since none of those were provided.",
+        "cited": "08 11 13",
+        "retrieved": "08 11 13, 21 13 13, 26 51 00, 09 29 00",
+        "hit": true
+      },
+      {
+        "rfi_id": "RFI-101-00840",
+        "draft": "No, the substitution is not approved: domestic water piping above grade is specified as Type L copper with lead-free solder or press fittings (per 22 11 16). The same section states PEX is not permitted in healthcare occupancies (per 22 11 16), and the excerpts do not state the occupancy classification of the Mezzanine, so we cannot confirm PEX would be allowed there even if the design team were open to it. The excerpts also contain no PEX product or fitting requirements and no substitution procedure, so using PEX would be a deviation from the specified material that needs written approval. The design team must confirm the Mezzanine's occupancy classification and decide whether to accept PEX for this area, or whether the copper lead time must be handled another way, such as early procurement or press-fitting copper. Until written direction is issued, we will carry Type L copper per 22 11 16, with disinfection per AWWA C651 and thermostatic mixing valves at hand-washing fixtures unchanged (per 22 11 16).",
+        "cited": "22 11 16",
+        "retrieved": "22 11 16, 26 24 16, 23 31 13, 26 05 19",
+        "hit": true
+      },
+      {
+        "rfi_id": "RFI-104-02345",
+        "draft": "Yes, epoxy-coated reinforcing is required at the Level 2 loading dock slab, because the specifications state that \"epoxy-coated bars are required in parking structures and exterior slabs exposed to de-icing salts\" (per 03 20 00). The RFI states this slab is exterior and will see de-icing salts, so it falls under that requirement, and the drawings' call for uncoated bars conflicts with the specification. The excerpts do not state which governs when the drawings and specifications conflict, and they do not give the epoxy coating standard (e.g., ASTM A775) or confirm whether the base bar remains ASTM A615 Grade 60 (per 03 20 00). The design team must confirm in writing that epoxy-coated bars govern, issue a revised drawing or addendum, and specify the coating standard. The 2-inch cover for surfaces exposed to weather (per 03 20 00) is unaffected by this question and should be confirmed by the design team.",
+        "cited": "03 20 00",
+        "retrieved": "03 20 00, 05 50 00, 03 30 00, 08 80 00",
+        "hit": true
+      }
+    ]
+  }
+}

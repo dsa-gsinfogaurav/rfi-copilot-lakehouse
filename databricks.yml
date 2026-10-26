@@ -1,0 +1,135 @@
+# RFI Intelligence - end-to-end Databricks build (Engineering & Construction)
+# Lakeflow -> Unity Catalog -> ML + Gen AI -> Lakebase -> Genie -> Databricks App, deployed as one Asset Bundle.
+bundle:
+  name: rfi-intelligence
+
+variables:
+  catalog:
+    default: gauravsharma_catalog
+  schema:
+    default: rfi_intel
+  warehouse_id:
+    description: Serverless SQL warehouse used by the app and Genie
+    default: 15744137d88bad5a
+  vs_endpoint:
+    default: cdi_vs
+  llm_endpoint:
+    default: databricks-claude-sonnet-5-5
+  lakebase_instance:
+    default: rfi-intel-db
+  app_sp_client_id:
+    description: Service principal of the app (printed by `databricks apps get rfi-copilot`)
+    default: 18dc1d86-01a1-46ad-a7d2-a58667f48569
+
+resources:
+  schemas:
+    rfi_intel:
+      catalog_name: ${var.catalog}
+      name: ${var.schema}
+      comment: RFI Intelligence FE build - synthetic construction data
+
+  database_instances:
+    rfi_db:
+      name: ${var.lakebase_instance}
+      capacity: CU_1
+
+
+  pipelines:
+    rfi_lakeflow:
+      name: rfi-intel-lakeflow-medallion
+      catalog: ${var.catalog}
+      schema: ${resources.schemas.rfi_intel.name}
+      serverless: true
+      channel: CURRENT
+      photon: true
+      libraries:
+        - file:
+            path: ./src/pipeline/rfi_lakeflow_pipeline.py
+      configuration:
+        raw_root: /Volumes/${var.catalog}/${var.schema}/raw_landing
+
+  jobs:
+    rfi_build:
+      name: rfi-intel-end-to-end-build
+      description: Raw data -> Lakeflow -> UC governance -> ML -> Gen AI -> Lakebase -> Genie
+      max_concurrent_runs: 1
+      parameters:
+        - {name: catalog, default: "${var.catalog}"}
+        - {name: schema, default: "${var.schema}"}
+      tasks:
+        - task_key: generate_raw_data
+          notebook_task: {notebook_path: ./src/notebooks/01_generate_raw_data.py}
+        - task_key: lakeflow_medallion
+          depends_on: [{task_key: generate_raw_data}]
+          pipeline_task: {pipeline_id: "${resources.pipelines.rfi_lakeflow.id}", full_refresh: true}
+        - task_key: uc_governance
+          depends_on: [{task_key: lakeflow_medallion}]
+          notebook_task: {notebook_path: ./src/notebooks/02_unity_catalog_governance.py}
+        - task_key: ml_sla_risk
+          depends_on: [{task_key: lakeflow_medallion}]
+          notebook_task: {notebook_path: ./src/notebooks/03_ml_sla_risk_model.py}
+        - task_key: genai_rag_classify
+          depends_on: [{task_key: lakeflow_medallion}]
+          notebook_task:
+            notebook_path: ./src/notebooks/04_genai_rag_and_classify.py
+            base_parameters: {vs_endpoint: "${var.vs_endpoint}", llm_endpoint: "${var.llm_endpoint}"}
+        - task_key: lakebase_serving
+          depends_on: [{task_key: ml_sla_risk}, {task_key: genai_rag_classify}, {task_key: uc_governance}]
+          notebook_task:
+            notebook_path: ./src/notebooks/05_lakebase_serving.py
+            base_parameters: {instance: "${var.lakebase_instance}", app_sp_client_id: "${var.app_sp_client_id}"}
+        - task_key: genie_space
+          depends_on: [{task_key: lakebase_serving}]
+          notebook_task:
+            notebook_path: ./src/notebooks/06_genie_space.py
+            base_parameters: {warehouse_id: "${var.warehouse_id}", app_sp_client_id: "${var.app_sp_client_id}"}
+
+    rfi_audit_sync:
+      name: rfi-intel-workflow-audit-sync
+      description: Lakebase ops.rfi_workflow_events -> Delta rfi_workflow_audit (also triggered by the app after each decision)
+      max_concurrent_runs: 1
+      queue: {enabled: true}
+      schedule:
+        quartz_cron_expression: "0 0/15 * * * ?"
+        timezone_id: America/Chicago
+        pause_status: PAUSED
+      tasks:
+        - task_key: audit_sync
+          notebook_task:
+            notebook_path: ./src/notebooks/07_workflow_audit_sync.py
+            base_parameters: {catalog: "${var.catalog}", schema: "${var.schema}", instance: "${var.lakebase_instance}"}
+      permissions:
+        - {service_principal_name: "${var.app_sp_client_id}", level: CAN_MANAGE_RUN}
+
+  apps:
+    rfi_copilot:
+      name: rfi-copilot
+      description: RFI Copilot - Lakebase-served inbox, ML risk, Gen-AI drafts, Genie
+      source_code_path: ./app
+      config:
+        command: ["gunicorn", "app:server", "-b", "0.0.0.0:8000", "--workers", "2", "--threads", "8", "--worker-class", "gthread", "--timeout", "180"]
+        env:
+          - {name: CATALOG, value: "${var.catalog}"}
+          - {name: SCHEMA, value: "${var.schema}"}
+          - {name: WAREHOUSE_ID, value: "${var.warehouse_id}"}
+          - {name: VS_INDEX, value: "${var.catalog}.${var.schema}.spec_chunks_index"}
+          - {name: LLM_ENDPOINT, value: "${var.llm_endpoint}"}
+          - {name: LAKEBASE_INSTANCE, value: "${var.lakebase_instance}"}
+          - {name: AUDIT_JOB_ID, value: "${resources.jobs.rfi_audit_sync.id}"}
+          - {name: GENIE_TITLE, value: "RFI Intelligence - Summit Ridge Builders"}
+      resources:
+        - name: sql-warehouse
+          sql_warehouse: {id: "${var.warehouse_id}", permission: CAN_USE}
+        - name: database
+          database:
+            instance_name: ${resources.database_instances.rfi_db.name}
+            database_name: rfi_ops
+            permission: CAN_CONNECT_AND_CREATE
+        - name: llm
+          serving_endpoint: {name: "${var.llm_endpoint}", permission: CAN_QUERY}
+
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://fevm-gauravsharma.cloud.databricks.com

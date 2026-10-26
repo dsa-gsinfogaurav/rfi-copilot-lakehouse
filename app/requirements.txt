@@ -1,0 +1,6 @@
+dash>=2.17
+databricks-sdk>=0.60
+openai>=1.52
+gunicorn>=22.0
+plotly>=5.22
+psycopg[binary]>=3.1
