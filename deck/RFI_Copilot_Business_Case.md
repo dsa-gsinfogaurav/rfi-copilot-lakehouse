@@ -2,9 +2,35 @@
 
 **RFI Copilot for Summit Ridge Builders** · Engineering & Construction · General contractor, 8 active and recent projects, $995M contract value
 
-**About $1.6M a year in protected margin.** RFI response time cut from 7.9 to 6 days. RFIs likely to miss their SLA are flagged the day they are submitted, before the delay reaches the critical path.
+**About $1.6M a year in protected margin, roughly half a point of operating margin.** RFI response time drops from 7.9 to 6 days. RFIs likely to miss their SLA are flagged the day they are submitted, before the delay reaches the critical path and the bonus scorecard.
 
 *Built end to end on the Databricks Data Intelligence Platform. All figures come from the working prototype running on synthetic but realistic portfolio data.*
+
+---
+
+## Why we are here: the industry is losing margin to late information
+
+| What the industry data shows | Source |
+|---|---|
+| Large projects typically finish **20% late** and run **up to 80% over budget** | McKinsey Global Institute, *Reinventing Construction* (2017) |
+| Construction productivity grew about **1% a year** for two decades, versus 2.8% for the world economy | McKinsey Global Institute (2017) |
+| Project teams spend **35% of their time** (over 14 hours a week) searching for information, resolving conflicts and fixing rework | FMI & PlanGrid, *Construction Disconnected* (2018) |
+| Bad data cost the industry an estimated **$1.8 trillion** in 2020, and about **14% of rework** traces to bad data | Autodesk & FMI, *Harnessing the Data Advantage* (2021) |
+| The average project generates **796 RFIs**, each taking **9.7 days** to answer and costing about **$1,080** to process | Navigant Construction Forum (2013) |
+
+**What we see in Summit Ridge's own data:** 47% of RFIs miss the design team's SLA, 44 of the 65 open RFIs are already late, and late critical-path RFIs carry **$11.2M** of liquidated-damages exposure.
+
+**The RFI is where late information turns into lost margin.** It is the moment a crew stops and waits.
+
+---
+
+## Why invest now, and why build it on your own data
+
+- **Contracts have shifted schedule risk onto the GC.** Harbor Point carries $60K/day in liquidated damages, so schedule certainty now decides both margin and the next bid.
+- **AI can now read the contract documents.** In the prototype, retrieval finds the governing spec section for 95% of open RFIs and Claude drafts a cited answer, at pay-per-token cost.
+- **The data already exists, just disconnected.** RFI logs, spec books, firm SLAs and schedules sit in Procore or ACC exports and PDFs. Unifying them once in a governed lakehouse also feeds the next use cases: submittals, change orders and schedule risk.
+- **Building it beats buying a point tool.** Off-the-shelf RFI tools stop at the workflow. This keeps the data, the risk model, the AI and the audit trail inside the GC's own tenant, with no per-seat lock-in and the GC's history as the training set.
+- **Waiting has a price.** Each quarter of the status quo forgoes about **$0.4M** of the $1.6M a year. Harbor Point is in its peak RFI phase right now (24 open, 15 already late).
 
 ---
 
@@ -18,7 +44,20 @@
 | Change-order cost originating in RFIs | **$16.8M** (740 COs) | Root-cause feedback to preconstruction | Preconstruction, Estimating |
 | Project-engineer time per RFI | ≈ $1,080 of handling cost per RFI (industry) | −35% with triage + cited AI drafts | Project Engineers |
 
-**Value: about $1.6M per year for this portfolio.** The levers and assumptions are on slide 8. Platform run cost is sized during the pilot (see the appendix).
+**Value: about $1.6M per year**, which is roughly **+0.5 points of operating margin** on this portfolio (slide 11).
+
+---
+
+## What this does to the numbers each executive is paid on
+
+| Executive | Typically measured and paid on (confirm in discovery) | What RFI Copilot moves | Impact in their terms |
+|---|---|---|---|
+| **COO / VP Operations** | Portfolio operating margin vs plan, on-time completion, repeat-owner work | LD days avoided, faster answers, early escalation of high-risk RFIs | **≈ +0.5 pts of margin** on ≈ $285M annual volume, about **+14% net profit** at a 4% net margin |
+| **CFO** | Net margin vs forecast (no quarter-end fade), forecast accuracy, cash from approved change orders | PCOs flagged at the RFI; schedule risk visible weeks earlier | $16.8M of RFI-driven change orders priced and submitted while the GC still has leverage |
+| **Project Executive** (Harbor Point) | Project fee and gross-profit fade, milestone dates, owner satisfaction | Day-one risk ranking; approver sign-off on high-stakes answers | Each critical-path week avoided = **$420K of LDs, about 3% of a 5% fee** on a $310M job |
+| **Director of Project Controls** | EAC forecast accuracy, change-order cycle time, reporting effort | Governed RFI facts, Genie answers, complete audit trail | A weekly risk review on live data instead of spreadsheets |
+
+**Margin fade and missed milestones are the two things that cut these executives' annual incentive.** RFI Copilot attacks both at the RFI, where a large share of the fade begins.
 
 ---
 
@@ -28,8 +67,6 @@
 - Half of all RFIs miss the design team's contractual response window (7 days, or 3 days if urgent).
 - When a late RFI sits on a **critical-path** activity, every day it slips becomes a liquidated-damages day: $25K/day at Lakeside Hospital and $60K/day at Harbor Point.
 - Project engineers triage by gut feel and re-type answers that already exist in the spec book. Leadership has no portfolio view of which firm, discipline or document gap is driving the cost.
-
-> Industry context: the Navigant Construction Forum study of 1,362 projects found an average of 796 RFIs per project and 9.7 days per response.
 
 ---
 
@@ -43,7 +80,7 @@
 
 - **Design firms:** the MEP and fire-protection engineers breach SLA 57–65% of the time, versus 21–36% for civil and structural.
 - **Root cause (Gen AI on every RFI):** spec ambiguity is 28% of volume, and field conditions plus design conflicts drive **$10.3M** of change-order cost.
-- **Implication:** two projects and two design firms account for most of the exposure. That is where to start.
+- **Implication:** two projects and two design firms account for most of the exposure, and those two Project Executives carry most of the bonus risk. That is where to start.
 
 ---
 
@@ -89,34 +126,36 @@
 
 ---
 
-## Value model (annualized for this portfolio)
+## Value model (annualized), translated into margin
 
 | Lever | Mechanism | Assumption | Annual value |
 |---|---|---|---|
 | Avoided liquidated damages | Escalate high-risk critical-path RFIs at submission, days before the SLA lapses | 30% of the ≈ $3.2M/yr LD exposure from late critical-path RFIs avoided | **≈ $0.96M** |
 | Project-engineer productivity | Triage gate + cited drafts | ≈ 1,085 RFIs/yr × $1,080 handling cost × 35% saved | **≈ $0.41M** |
 | Fewer RFI-driven change orders | Root-cause feedback to preconstruction (design conflicts + missing information) | 10% of ≈ $1.9M/yr | **≈ $0.19M** |
-| Crew idle time (not counted) | Faster answers on non-critical work | — | upside |
 | **Total** | | | **≈ $1.6M / yr** |
+| **In margin terms** | ≈ $285M annual construction volume ($995M over ≈ 3.5 years) | 4% net margin ≈ $11.4M profit/yr | **≈ +0.5 pts margin, ≈ +14% profit** |
 
-*The history covers about 3.5 years (2023 to Oct 2026), so annual values are total ÷ 3.5. Every assumption is a parameter to validate during the pilot.*
+*Annual values are history total ÷ 3.5 years. Every assumption, including volume and net margin, is a parameter to validate in discovery and the pilot.*
 
 ---
 
 ## For the executive sponsor (COO / VP Operations)
 
-- **Margin protection you can measure.** Liquidated damages and RFI-driven change orders are tracked per project in governed tables, so there is a weekly number, not an anecdote.
-- **Early warning, portfolio-wide.** The risk model flags the RFIs most likely to stall work before the SLA lapses. Genie answers "where are we exposed?" without waiting on an analyst.
-- **Design-team accountability.** Firm-level SLA performance (for example, 65% breach for one specialty engineer) gives you leverage at the next fee negotiation or selection.
-- **Low-risk platform choice.** One governed platform for data, ML, Gen AI, the app database and BI. There is no new point product to integrate, and it runs on the GC's existing Databricks account.
+- **Protects the number on your scorecard.** About half a point of portfolio operating margin, from LD days that never happen and engineering hours that go back into the work, tracked per project in governed tables.
+- **No quarter-end surprises.** High-risk RFIs are visible the day they are submitted, not when the fade shows up in the monthly forecast. Genie answers "where are we exposed?" without waiting on an analyst.
+- **Leverage with design firms.** Firm-level SLA performance (one specialty engineer breaches 65% of the time) gives you facts for fee negotiations and the next selection.
+- **Delivery reputation wins work.** On-time milestones on LD-heavy jobs like Harbor Point are what earn repeat owners and the next negotiated contract.
+- **Low-risk platform choice.** One governed platform for data, ML, Gen AI, the app database and BI, running on the GC's existing Databricks account.
 
 ---
 
 ## For the domain owner (Director of Project Controls / Project Executives)
 
+- **Defends your project's fee.** A week of critical-path slip at Harbor Point costs $420K, about 3% of the fee. The risk-ranked inbox makes sure those RFIs are chased first.
+- **Forecasts you can stand behind.** RFI-driven PCOs are flagged at the RFI, so the EAC carries them weeks before close-out.
 - **Less typing, same control.** AI drafts are always reviewed and approved by a person. Citations show exactly which spec section supports the answer, and gaps are flagged instead of guessed.
 - **Fewer RFIs reach the design team.** The triage gate closes the ones the contract documents already answer.
-- **One queue, sorted by what will hurt.** Risk tier, expected answer date, liquidated-damages rate and field proposal are all on one screen.
 - **Audit trail by default.** Every approve, route, PCO flag or close is a timestamped event in Lakebase, mirrored to a governed Delta table and queryable in Genie.
 - **Fits existing tools.** Ingestion reads the PM system's exports (Procore and Autodesk Construction Cloud style), so no new data entry is required.
 
@@ -132,16 +171,16 @@
 
 ---
 
-## 90-day pilot plan
+## 90-day pilot, measured on the executive scorecard
 
 | Weeks | Scope | Success criteria |
 |---|---|---|
 | 1–3 | Connect Procore/ACC RFI exports and the spec book for **Harbor Point** and **Lakeside** | Daily Lakeflow ingest; gold KPIs match the PM system within 1% |
 | 4–6 | Risk model retrained on the GC's own history; Copilot rolled out to 6 project engineers | Top-20% risk band precision ≥ 70%; ≥ 60% of drafts approved with light edits |
-| 7–10 | Genie space for project executives; weekly risk review | Executives use Genie weekly; high-risk RFIs escalated ≥ 10 days before the SLA |
-| 11–13 | Measure and decide | Average response ≤ 6 days on pilot projects; LD-exposure trend down; go/no-go for all 8 projects |
+| 7–10 | Genie space for project executives; weekly risk review | High-risk RFIs escalated ≥ 10 days before the SLA; executives use Genie weekly |
+| 11–13 | Measure against the scorecard | Avg response ≤ 6 days; **zero LD days from late RFIs on pilot projects; fee-fade trend flat or improving**; go/no-go for all 8 projects |
 
-**The ask:** a sponsor (COO), a domain owner (Director of Project Controls), two pilot projects, and read access to RFI exports and spec books.
+**The ask:** a sponsor (COO), a domain owner (Director of Project Controls), two pilot projects, read access to RFI exports and spec books, and **the current incentive scorecard metrics, so the pilot reports in exactly those terms.**
 
 ---
 
@@ -149,6 +188,7 @@
 
 - Portfolio, RFIs, firms and spec book are **synthetic**, produced by `01_generate_raw_data`. The generator encodes realistic drivers: firm responsiveness, coordination load, missing drawings, priority, and a 12% critical-path rate.
 - Liquidated-damages exposure = schedule-impact days × the project's LD rate, counted **only** for critical-path RFIs.
-- RFI handling cost (≈ $1,080 per RFI), 796 RFIs per project and 9.7 days per response: Navigant Construction Forum, "Impact of Requests for Information on Construction Projects" (2013).
+- Margin translation: annual volume ≈ $995M ÷ 3.5 years ≈ $285M; a 4% net margin is an illustrative assumption. Harbor Point fee is assumed at 5% of $310M (≈ $15.5M). Executive incentive metrics are typical of GC compensation plans and **must be confirmed in discovery**.
+- Industry sources: McKinsey Global Institute, *Reinventing Construction: A Route to Higher Productivity* (2017); FMI & PlanGrid, *Construction Disconnected* (2018); Autodesk & FMI, *Harnessing the Data Advantage in Construction* (2021); Navigant Construction Forum, *Impact of Requests for Information on Construction Projects* (2013).
 - Platform run cost (indicative, to be sized in the pilot): a nightly serverless pipeline and jobs, one small Lakebase instance, one Vector Search endpoint, a serverless SQL warehouse, and pay-per-token model calls.
 - Code, executed notebooks with outputs, and app smoke-test results: see the GitHub repository (`evidence/`).
